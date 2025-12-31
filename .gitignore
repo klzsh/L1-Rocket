@@ -40,3 +40,8 @@ fp-info-cache
 *.raw
 .svg2shenzhen-cache
 .DS_Store
+
+.vscode
+.pio
+.gitignore
+*.zip
