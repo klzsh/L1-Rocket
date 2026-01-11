@@ -2,25 +2,7 @@ format long
 data = readtable('data/Flight_Data.csv');
 
 
-% offset = 49961;
-% 
-% columnIndex = 1; % Change to the index of the column you want to check
 
-% Find rows containing NaN values in the specific column
-% rowsWithNaN = isnan(data{:, columnIndex});
-
-% Remove rows containing NaN values in the specific column from the table
-% data = data(~rowsWithNaN, :);
-
-% columnIndex = 43; % Change to the index of the column you want to check
-
-% % Find rows containing NaN values in the specific column
-% rowsWithNaN = isnan(data{:, columnIndex});
-
-% Remove rows containing NaN values in the specific column from the table
-% data = data(~rowsWithNaN, :);
-
-alt = data.ALT;
 
 % Remove the outlier rows from the data
 % cleanedData = data(~outlierIndices, :);
@@ -35,16 +17,16 @@ accel_z = cleanedData.MAZ;
 
 
 
-num_points = length(lon);
-x_dist = zeros(num_points, 1);
-y_dist = zeros(num_points, 1);
+% num_points = length(lon);
+% x_dist = zeros(num_points, 1);
+% y_dist = zeros(num_points, 1);
 
 std_error = 2;
-
-for i = 2:num_points
-    x_dist(i) = haversine(lon(1), lon(i));
-    y_dist(i) = haversine(lat(1), lat(i));
-end
+% 
+% for i = 2:num_points
+%     x_dist(i) = haversine(lon(1), lon(i));
+%     y_dist(i) = haversine(lat(1), lat(i));
+% end
 
 x_dist = cleanedData.PX;
 y_dist = cleanedData.PY;
@@ -73,8 +55,8 @@ z_pos_measured = [];
 kf = KalmanFilter(initial_control, initial_state, P);
 kf = kf.calculateInitialValues(0.002);
 
-initial_lon = lon(1);
-initial_lat = lat(1);
+% initial_lon = lon(1);
+% initial_lat = lat(1);
 numEntries = size(time);
 for i = 2:numEntries(1,1)
     % x = haversine(initial_lon, lon(i)) + randn(1)*std_error;
