@@ -9,6 +9,10 @@ static bool coastAccelDetected = false;
 
 static bool landed = false;
 
+float abs(float x){
+  return x < 0 ? -x : x;
+}
+
 rocketStages_e getCurrentState()
 {
   return globalState;

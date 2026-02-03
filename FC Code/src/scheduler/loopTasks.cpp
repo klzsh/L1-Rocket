@@ -146,10 +146,7 @@ void task_updateKalmanFilter(uint32_t time)
         rocketState.gpsOutput.displacement.x,
         rocketState.gpsOutput.displacement.y,
         rocketState.altitude};
-    setKalmanControl(controlData);
-    setKalmanMeasurement(measurementData);
-    iterateFilter(time);
-    rocketState.kalmanFilterOutput = getKalmanState();
+   
 }
 
 void task_WriteBufferToDisk(uint32_t time)

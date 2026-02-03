@@ -11,6 +11,11 @@
 #include "scheduler/loopTasks.h"
 #include "logging/logger.h"
 
+#include "Mahony.h"
+#include "StateEstimation/KalmanFilter.h"
+
+MahonyAHRS AHRS;
+SixStateLKF kFilter;
 
 void setup(void)
 {
@@ -25,6 +30,10 @@ void setup(void)
   // USB Serial
   Serial.begin(115200);
   logToBuffer("Started Serial", micros());
+  if (CrashReport)
+  {
+    Serial.print(CrashReport);
+  }
 
   // init serial for radio
   RADIO_UART.begin(115200);
@@ -42,9 +51,11 @@ void setup(void)
 
   bool GPSStatus = initGPS();
   logToBuffer(GPSStatus ? "GPS Init" : "GPS Init Failed", micros());
-  
+
   analogWrite(GPS_LED, 128);
-  while(!calculateInitialGPSCoords()){}
+  while (!calculateInitialGPSCoords())
+  {
+  }
   digitalWrite(GPS_LED, HIGH);
 
   bool baroStatus = initBaro();
@@ -55,29 +66,41 @@ void setup(void)
   logToBuffer(IMUStatus ? "IMU Init" : "IMU Init Failed", micros());
   digitalWrite(IMU_LED, HIGH);
 
-
   initVoltageSensor();
   logToBuffer("Voltage Sens Init", micros());
 
-  // initRadio();
-  // logToBuffer("Radio Initialized", micros());
+  bool radioStatus = initRadio();
+  logToBuffer(radioStatus ? "Radio Init" : "Radio Init Failed", micros());
   clearQueue();
   logToBuffer("Queue Cleared", micros());
 
   initScheduler();
   logToBuffer("Initialized Scheduler", micros());
 
-  initializeKF(micros());
+  AHRS.setMode(MahonyMode::CALIBRATING);
+  const int calibSamples = 200;
+  for (int i = 0; i < calibSamples; i++)
+  {
+    // Assume ~100Hz for the delay(10) loop
+    floatVector_3 accelOutput = {0,0,0};
+    readAccelData(&accelOutput);
+    Vector<3> accel = Vector<3>(accelOutput.x, accelOutput.y, accelOutput.z);
+
+    floatVector_3 gyroOutput = {0,0,0};
+    readGyroData(&gyroOutput);
+    Vector<3> gyro = Vector<3>(gyroOutput.x, gyroOutput.y, gyroOutput.z);
+    AHRS.update(accel, gyro, 0.01);
+    delay(10);
+  }
+  AHRS.finalizeCalibration();
   initializeRocketState();
 
   logToBuffer("====Starting Scheduler Loop====", micros());
   writeToDisk(micros());
 }
-GPSOutput_t output = {0};
+
 void loop(void)
 {
   schedulerLoop();
-  // getGPSData(&output);
-  // Serial.println(output.latitude);
-  // delay(100);
+
 }

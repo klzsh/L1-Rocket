@@ -1,6 +1,6 @@
 #pragma once
 #define LOG_TO_SERIAL
-#define LOG_DATA_TO_SERIAL
+// #define LOG_DATA_TO_SERIAL
 // #define NO_DATA_LOGGING
 /*
   * SENSOR CONFIGS

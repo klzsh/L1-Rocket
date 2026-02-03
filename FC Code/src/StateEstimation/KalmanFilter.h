@@ -1,8 +1,20 @@
 #include "datatypes.h"
 #include "config.h"
-#include <arm_math.h>
-void initializeKF(uint32_t timestamp);
-void iterateFilter(uint32_t timestamp);
-kalmanState_t getKalmanState();
-void setKalmanMeasurement(float32_t *data);
-void setKalmanControl(float32_t *data);
+#include "LinearKalmanFilter.h"
+#include "Matrix.h"
+#include "Mahony.h"
+
+
+class SixStateLKF: public LinearKalmanFilter{
+  public:
+    SixStateLKF();
+    ~SixStateLKF() = default;
+
+    void initialize() override {};
+    Matrix getF(double dt) override;
+    Matrix getG(double dt) override;
+    Matrix getH() override;
+    Matrix getR() override;
+    Matrix getQ(double dt) override;
+};
+
